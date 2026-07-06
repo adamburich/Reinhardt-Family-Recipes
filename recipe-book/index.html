@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Reinhardt Family Recipe Box</title>
+<style>
+  :root{
+    /* cream wood */
+    --wood-light:#f6edd9;
+    --wood:#e9dcc3;
+    --wood-mid:#ddccaa;
+    --wood-dark:#c9b590;
+    --wood-edge:#b5a077;
+    --wood-inner:#d8c6a2;
+    --wood-inner-dark:#b39a72;
+    --wood-grain:rgba(148,120,80,.16);
+    --ink:#3d2f24;
+    --ink-soft:#6b5844;
+    --card:#fffdf4;
+    --card-line:#bcd3e0;
+    --card-headline:#d98a7e;
+    --shadow:rgba(60,45,30,.35);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Georgia","Iowan Old Style",serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 25% 15%, #f2ead8 0%, transparent 55%),
+      radial-gradient(circle at 80% 90%, #e2d7ba 0%, transparent 55%),
+      #ece3cd;
+    line-height:1.55;
+    padding:36px 16px 70px;
+    overflow-x:clip;   /* the 460px box scene may exceed narrow viewports */
+  }
+
+  .page{max-width:1000px;margin:0 auto;}
+
+  .site-title{text-align:center;margin:0 0 6px;}
+  .site-title .kicker{
+    font-variant:small-caps;letter-spacing:.3em;font-size:.72rem;
+    color:#96604a;margin:0 0 6px;
+  }
+  .site-title h1{
+    font-family:"Playfair Display","Didot","Georgia",serif;
+    font-size:2rem;margin:0;line-height:1.15;
+  }
+  .site-title p.sub{margin:6px 0 0;font-style:italic;color:var(--ink-soft);font-size:.9rem;}
+
+  /* ===================== THE 3D BOX ===================== */
+  .scene{
+    position:relative;
+    width:460px;
+    height:470px;
+    margin:10px auto 0;
+    perspective:1300px;
+  }
+  @media(max-width:560px){
+    /* the 460px scene is wider than the viewport here — margin:auto can't
+       center an overflowing block, so anchor its center to the middle */
+    .scene{
+      left:50%;margin-left:-230px;
+      transform:scale(.68);transform-origin:top center;
+      margin-bottom:-140px;
+    }
+  }
+
+  .box3d{
+    position:absolute;
+    left:50%;bottom:70px;
+    width:460px;height:180px;
+    margin-left:-230px;
+    transform-style:preserve-3d;
+    transform:rotateX(-30deg) rotateY(-22deg);
+  }
+  .box3d *{transform-style:preserve-3d;}
+
+  .face{position:absolute;backface-visibility:visible;}
+
+  .wood-x{
+    background:
+      repeating-linear-gradient(90deg,
+        transparent 0, transparent 30px,
+        var(--wood-grain) 31px, transparent 33px, transparent 74px),
+      linear-gradient(180deg,var(--wood-light) 0%,var(--wood) 55%,var(--wood-mid) 100%);
+    border:1px solid var(--wood-edge);
+    border-top:3px solid #fbf5e6;
+  }
+
+  .face.front{
+    width:460px;height:180px;left:0;top:0;
+    transform:translateZ(125px);
+    border-radius:6px 6px 12px 12px;
+    box-shadow:inset 0 -10px 18px rgba(120,95,60,.22);
+  }
+  .face.front .notch{
+    position:absolute;top:-3px;left:50%;transform:translateX(-50%);
+    width:54px;height:24px;
+    background:linear-gradient(180deg,var(--wood-inner-dark),var(--wood-inner));
+    border:1px solid var(--wood-edge);border-top:none;
+    border-radius:0 0 54px 54px;
+    box-shadow:inset 0 -4px 8px rgba(80,60,35,.4);
+  }
+  .face.front .plate{
+    position:absolute;left:50%;top:58%;transform:translate(-50%,-50%);
+    font-variant:small-caps;letter-spacing:.16em;font-size:.76rem;
+    color:#5a4630;white-space:nowrap;
+    padding:6px 20px;
+    background:linear-gradient(180deg,#efe4c8,#dfd0ac);
+    border:2px solid #a99465;border-radius:6px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 1px 3px rgba(60,45,30,.3);
+  }
+  .face.front .plate::before,.face.front .plate::after{
+    content:"";position:absolute;top:50%;transform:translateY(-50%);
+    width:5px;height:5px;border-radius:50%;
+    background:radial-gradient(circle at 35% 30%,#e8dcbb,#8f7a4e);
+  }
+  .face.front .plate::before{left:6px;}
+  .face.front .plate::after{right:6px;}
+
+  .face.right{
+    width:250px;height:180px;left:105px;top:0;
+    transform:rotateY(90deg) translateZ(230px);
+    background:
+      repeating-linear-gradient(90deg,
+        transparent 0, transparent 24px,
+        var(--wood-grain) 25px, transparent 27px, transparent 58px),
+      linear-gradient(180deg,var(--wood) 0%,var(--wood-mid) 60%,var(--wood-dark) 100%);
+    border:1px solid var(--wood-edge);
+    border-top:3px solid #efe6d0;
+    border-radius:4px 4px 10px 10px;
+    box-shadow:inset 0 -10px 18px rgba(110,85,55,.3);
+  }
+  .face.left{
+    width:250px;height:180px;left:105px;top:0;
+    transform:rotateY(-90deg) translateZ(230px);
+    background:linear-gradient(180deg,var(--wood-inner-dark),var(--wood-inner));
+    border:1px solid var(--wood-edge);
+    border-top:3px solid #efe6d0;
+  }
+  .face.backw{
+    width:460px;height:180px;left:0;top:0;
+    transform:translateZ(-125px);
+    background:linear-gradient(180deg,var(--wood-inner-dark) 0%,var(--wood-inner) 80%);
+    border:1px solid var(--wood-edge);
+    border-top:3px solid #efe6d0;
+    box-shadow:inset 0 12px 20px rgba(80,60,35,.4);
+  }
+  .face.floor{
+    width:460px;height:250px;left:0;top:-35px;
+    transform:rotateX(90deg) translateZ(-90px);
+    background:
+      repeating-linear-gradient(0deg,
+        transparent 0, transparent 22px,
+        var(--wood-grain) 23px, transparent 25px, transparent 52px),
+      linear-gradient(180deg,#c4ac83,var(--wood-inner));
+  }
+  .face.lid{
+    width:460px;height:250px;left:0;top:-250px;
+    transform-origin:50% 100%;
+    transform:translateZ(-125px) rotateX(68deg);
+    background:
+      linear-gradient(180deg,var(--wood-mid),var(--wood-inner)) padding-box,
+      linear-gradient(180deg,var(--wood-light),var(--wood)) border-box;
+    border:14px solid transparent;
+    outline:1px solid var(--wood-edge);
+    border-radius:10px 10px 0 0;
+    box-shadow:inset 0 0 26px rgba(110,85,50,.35);
+  }
+  .face.lid::after{
+    content:"";position:absolute;inset:0;
+    background:repeating-linear-gradient(90deg,
+      transparent 0,transparent 24px,
+      var(--wood-grain) 25px,transparent 27px,transparent 60px);
+  }
+  .face.lid .hinge{
+    position:absolute;bottom:-13px;width:26px;height:7px;
+    background:linear-gradient(180deg,#cfc8b8,#8f8878);
+    border-radius:2px;box-shadow:0 1px 2px rgba(0,0,0,.35);
+  }
+  .face.lid .hinge.l{left:15%;}
+  .face.lid .hinge.r{right:15%;}
+
+  /* ===== dividers standing inside, generated from the recipe folders ===== */
+  .divider{
+    position:absolute;left:24px;right:24px;bottom:4px;height:86px;
+    transform:translateZ(var(--z));
+    background:var(--c);
+    border:1px solid rgba(90,65,40,.35);
+    border-radius:8px 8px 2px 2px;
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.35), inset 0 -20px 30px rgba(80,55,30,.18);
+    pointer-events:none;            /* only the tab is interactive */
+    transition:transform .2s ease, filter .2s ease;
+  }
+  .divider .tab{
+    pointer-events:auto;cursor:pointer;
+    /* tab is attached to the top edge of its divider (grows upward) */
+    position:absolute;bottom:calc(100% - 3px);top:auto;left:var(--tx);
+    width:72px;                       /* narrow — long names wrap to 2 lines */
+    padding:3px 5px 4px;
+    font-family:Verdana,"Segoe UI",Tahoma,sans-serif;
+    font-size:.57rem;font-weight:600;line-height:1.18;letter-spacing:0;text-align:center;
+    color:#2b1e11;text-shadow:0 1px 0 rgba(255,255,255,.3);
+    display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+    background:var(--c);
+    border:1px solid rgba(90,65,40,.4);border-bottom:none;
+    border-radius:7px 7px 0 0;
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.4);
+    transition:transform .18s ease, filter .18s ease, box-shadow .18s ease;
+  }
+  /* hover: raise the divider straight up out of the box (no forward push).
+     the whole lifted divider is clickable, so the click target is large
+     and doesn't slip out from under the cursor */
+  .divider.lifted{transform:translateZ(var(--z)) translateY(-54px);filter:brightness(1.1);z-index:60;
+    pointer-events:auto;cursor:pointer;}
+  .divider.lifted .tab{-webkit-line-clamp:3;
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.5),0 6px 12px -3px var(--shadow);}
+  .divider.active{transform:translateZ(var(--z)) translateY(-30px);}
+  .divider.active .tab{font-weight:700;
+    outline:2px solid rgba(60,40,20,.55);outline-offset:-2px;}
+
+  /* ground shadow */
+  .scene .ground{
+    position:absolute;left:2%;right:-4%;bottom:34px;height:60px;
+    background:radial-gradient(ellipse at 48% 50%,rgba(60,45,30,.38),transparent 68%);
+    transform:skewX(-14deg);
+    z-index:-1;
+  }
+
+  .hint{
+    text-align:center;font-style:italic;color:var(--ink-soft);
+    font-size:.85rem;margin:10px 0 0;
+  }
+  .hint .m-only{display:none;}
+
+  /* ===== touch / small screens: the box becomes decorative and the
+     categories render as big manila divider buttons instead ===== */
+  .catgrid{
+    display:none;
+    max-width:640px;margin:20px auto 0;
+    grid-template-columns:repeat(auto-fill,minmax(150px,1fr));
+    gap:12px 10px;padding:0 4px;
+  }
+  .catbtn{
+    position:relative;cursor:pointer;appearance:none;text-align:left;
+    font-family:Verdana,"Segoe UI",sans-serif;font-size:.78rem;font-weight:600;
+    color:#3f2d1e;
+    background:linear-gradient(180deg,#f1e3bf,#e6d3a2);
+    border:1px solid rgba(90,65,40,.35);
+    border-radius:4px 8px 8px 8px;
+    padding:12px 12px 10px;min-height:56px;
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.4),0 3px 6px -3px var(--shadow);
+  }
+  /* little divider tab on the top edge */
+  .catbtn::before{
+    content:"";position:absolute;top:-8px;left:9px;
+    width:36px;height:8px;
+    background:#eddcb0;
+    border:1px solid rgba(90,65,40,.35);border-bottom:none;
+    border-radius:5px 5px 0 0;
+  }
+  .catbtn .n{
+    display:block;font-size:.66rem;font-weight:400;
+    color:var(--ink-soft);margin-top:2px;
+  }
+  .catbtn.active{
+    outline:2px solid rgba(60,40,20,.55);outline-offset:-2px;
+    filter:brightness(1.05);
+  }
+  @media (max-width:700px), (hover:none){
+    .catgrid{display:grid;}
+    #dividers .tab{pointer-events:none;}   /* box is decorative on touch */
+    .hint .d-only{display:none;}
+    .hint .m-only{display:inline;}
+  }
+
+  .searchbar{position:relative;max-width:440px;margin:16px auto 0;}
+  .searchbar input{
+    width:100%;font-family:inherit;font-size:1rem;color:var(--ink);
+    padding:11px 16px 11px 42px;
+    background:#fffdf4;
+    border:1px solid var(--wood-edge);border-radius:24px;
+    box-shadow:inset 0 1px 3px rgba(60,45,30,.15),0 2px 5px -3px var(--shadow);
+  }
+  .searchbar input::placeholder{color:var(--ink-soft);font-style:italic;}
+  .searchbar input:focus{outline:none;border-color:var(--card-headline);
+    box-shadow:inset 0 1px 3px rgba(60,45,30,.15),0 0 0 3px rgba(217,138,126,.3);}
+  .searchbar .search-icon{
+    position:absolute;left:15px;top:50%;transform:translateY(-50%);
+    width:18px;height:18px;fill:var(--ink-soft);pointer-events:none;
+  }
+
+  /* ===================== RECIPE GALLERY ===================== */
+  .gallery-head{
+    display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;
+    max-width:960px;margin:28px auto 0;
+    border-bottom:2px solid var(--card-headline);padding-bottom:8px;
+  }
+  .gallery-head h2{
+    font-family:"Playfair Display","Georgia",serif;
+    font-size:1.6rem;margin:0;color:#8c3b2e;
+  }
+  .gallery-head .count{font-style:italic;color:var(--ink-soft);font-size:.9rem;}
+  .gallery-head .close{
+    margin-left:auto;cursor:pointer;font:inherit;font-size:.82rem;
+    color:var(--ink-soft);background:none;border:none;text-decoration:underline;
+  }
+  .gallery-head .close:hover{color:#8c3b2e;}
+
+  .cards{
+    /* masonry via JS-dealt columns: cards keep natural heights but stay in
+       left-to-right reading order (dealt round-robin across columns) */
+    display:flex;gap:22px;align-items:flex-start;
+    max-width:960px;margin:22px auto 0;
+  }
+  .cards .mcol{flex:1;min-width:0;display:flex;flex-direction:column;gap:22px;}
+  .rcard{
+    margin:0;background:var(--card);
+    border:1px solid #e3dcc6;border-radius:8px;
+    box-shadow:0 10px 20px -10px var(--shadow),0 1px 3px rgba(60,45,30,.14);
+    padding:12px 12px 14px;
+    display:flex;flex-direction:column;
+    animation:pullout .3s ease;
+  }
+  @keyframes pullout{from{opacity:0;transform:translateY(-18px);}to{opacity:1;transform:none;}}
+  .rcard-cat{
+    align-self:flex-start;cursor:pointer;appearance:none;
+    font-family:Verdana,"Segoe UI",sans-serif;font-size:.6rem;font-weight:600;
+    letter-spacing:.02em;color:#3f2d1e;
+    background:var(--badge,#e8dcc0);
+    border:1px solid rgba(90,65,40,.3);border-radius:10px;
+    padding:2px 9px;margin:0 0 8px;
+  }
+  .rcard-cat:hover{filter:brightness(.96);text-decoration:underline;}
+  .rcard-title{
+    font-family:"Playfair Display","Georgia",serif;
+    font-size:1.02rem;color:#8c3b2e;margin:2px 2px 10px;line-height:1.25;
+    border-bottom:1px solid var(--card-headline);padding-bottom:7px;
+  }
+  .scans{display:flex;flex-direction:column;gap:8px;}
+  .scan{
+    width:100%;height:auto;display:block;cursor:zoom-in;
+    border:1px solid #ddd3bb;border-radius:4px;
+    background:#fff;box-shadow:0 1px 2px rgba(60,45,30,.12);
+  }
+  .pagebadge{
+    align-self:flex-start;font-size:.64rem;font-variant:small-caps;letter-spacing:.08em;
+    color:var(--ink-soft);
+  }
+
+  .empty,.loading{
+    text-align:center;color:var(--ink-soft);font-style:italic;
+    max-width:960px;margin:30px auto 0;
+  }
+
+  /* lightbox */
+  .lightbox{
+    position:fixed;inset:0;z-index:100;display:none;
+    background:rgba(40,30,20,.82);
+    padding:24px;overflow:auto;cursor:zoom-out;
+  }
+  .lightbox.open{display:flex;flex-direction:column;align-items:center;gap:16px;}
+  .lightbox img{max-width:min(920px,94vw);height:auto;
+    border:6px solid #fffdf4;border-radius:4px;box-shadow:0 12px 40px rgba(0,0,0,.5);}
+  .lightbox .lb-title{color:#fdf6e6;font-family:"Playfair Display","Georgia",serif;
+    font-size:1.3rem;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.6);}
+  .lightbox .lb-close{position:fixed;top:14px;right:20px;font-size:2rem;color:#fdf6e6;
+    background:none;border:none;cursor:pointer;line-height:1;}
+
+  footer{
+    text-align:center;margin-top:44px;font-style:italic;
+    color:var(--ink-soft);font-size:.85rem;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="site-title">
+    <h1>The Reinhardt Family Recipe Box</h1>
+    <p class="sub">Gathered with love</p><br>
+  </header>
+
+  <div class="scene">
+    <div class="ground"></div>
+
+    <div class="box3d">
+      <div class="face lid" aria-hidden="true">
+        <span class="hinge l"></span>
+        <span class="hinge r"></span>
+      </div>
+
+      <div class="face backw" aria-hidden="true"></div>
+      <div class="face floor" aria-hidden="true"></div>
+      <div class="face left" aria-hidden="true"></div>
+
+      <!-- dividers are generated here from recipes.json -->
+      <nav id="dividers" aria-label="Recipe categories"></nav>
+
+      <div class="face right wood-x" aria-hidden="true"></div>
+      <div class="face front wood-x">
+        <span class="notch" aria-hidden="true"></span>
+        <span class="plate">Reinhardt Family Recipes</span>
+      </div>
+    </div>
+  </div>
+
+  <p class="hint" id="hint"><br><br><br><span class="d-only">Pick a divider tab to flip to that category &mdash; hover to lift a tab.</span><span class="m-only">Tap a category to open its recipes.</span></p>
+
+  <div class="catgrid" id="catgrid" role="navigation" aria-label="Recipe categories"></div>
+
+  <div class="searchbar">
+    <svg class="search-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M10 4a6 6 0 104.47 10.03l4.25 4.25 1.41-1.41-4.25-4.25A6 6 0 0010 4zm0 2a4 4 0 110 8 4 4 0 010-8z"/></svg>
+    <input id="search" type="search" placeholder="Search all recipes by name&hellip;" autocomplete="off" aria-label="Search all recipes by name">
+  </div>
+
+  <div id="gallery"></div>
+</div>
+
+<div class="lightbox" id="lightbox" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Close">&times;</button>
+  <div class="lb-title" id="lbTitle"></div>
+</div>
+
+<footer>
+  The Reinhardt Family Recipe Box
+</footer>
+
+<script>
+/* all-manila dividers: two barely-different shades so neighbors read as
+   separate cards, but the whole box stays manila */
+const PALETTE = ['#ecdcb0','#e3d09e'];
+const TAB_X = ['0%','14%','28%','43%','57%','71%','84%']; // tab x-positions
+const TAB_COLS = TAB_X.length;
+
+const dividersEl = document.getElementById('dividers');
+const catgridEl  = document.getElementById('catgrid');
+const galleryEl  = document.getElementById('gallery');
+const hintEl     = document.getElementById('hint');
+const searchEl   = document.getElementById('search');
+const lb    = document.getElementById('lightbox');
+const lbTitle = document.getElementById('lbTitle');
+
+let DATA = null;
+let activeSlug = null;
+const CATCOLOR = {};   // slug -> divider color
+let ALL = [];          // flat index: {title, pages, catName, catSlug}
+
+fetch('recipes.json')
+  .then(r => r.json())
+  .then(data => {
+    DATA = data;
+    buildDividers(data.categories);
+    ALL = data.categories.flatMap(c =>
+      c.recipes.map(r => ({title:r.title, pages:r.pages, catName:c.name, catSlug:c.slug})));
+  })
+  .catch(err => { galleryEl.innerHTML = '<p class="empty">Could not load recipes.json &mdash; '+err+'</p>'; });
+
+function buildDividers(cats){
+  const n = cats.length;
+  const frontZ = 116, backZ = -116;
+  cats.forEach((cat, i) => {
+    const z = n > 1 ? frontZ - (frontZ - backZ) * i / (n - 1) : 0;
+    const color = PALETTE[i % PALETTE.length];
+    CATCOLOR[cat.slug] = color;
+    const div = document.createElement('div');
+    div.className = 'divider';
+    div.style.setProperty('--z', z.toFixed(1) + 'px');
+    div.style.setProperty('--tx', TAB_X[i % TAB_COLS]);
+    div.style.setProperty('--c', color);
+    div.style.setProperty('--i', i);
+    div.style.zIndex = i;                 // front tabs paint over back tabs
+    const tab = document.createElement('button');
+    tab.className = 'tab';
+    tab.type = 'button';
+    tab.textContent = cat.name;
+    tab.title = cat.name + ' (' + cat.recipes.length + ' recipes)';
+    tab.setAttribute('aria-pressed', 'false');
+    tab.dataset.slug = cat.slug;
+    tab.addEventListener('mouseenter', () => liftDivider(div, tab));
+    div.addEventListener('click', () => selectCategory(cat.slug));
+    div.appendChild(tab);
+    dividersEl.appendChild(div);
+
+    // touch-friendly manila button for the mobile category grid
+    const btn = document.createElement('button');
+    btn.className = 'catbtn';
+    btn.type = 'button';
+    btn.dataset.slug = cat.slug;
+    btn.innerHTML = esc(cat.name) +
+      '<span class="n">' + cat.recipes.length + ' recipe' + (cat.recipes.length===1?'':'s') + '</span>';
+    btn.addEventListener('click', () => selectCategory(cat.slug));
+    catgridEl.appendChild(btn);
+  });
+}
+
+// Lift a divider on hover without flicker: the lift moves the tab out from
+// under the cursor, so instead of relying on mouseleave (which would fire
+// immediately and re-trigger — the flicker), track the pointer and only
+// drop the divider once it leaves a generous zone around the lifted tab.
+function liftDivider(div, tab){
+  if (div.classList.contains('lifted')) return;
+  dividersEl.querySelectorAll('.divider.lifted').forEach(d => d.classList.remove('lifted'));
+  div.classList.add('lifted');
+  const onMove = e => {
+    const r = tab.getBoundingClientRect();
+    const inside =
+      e.clientX >= r.left - 16 && e.clientX <= r.right + 16 &&
+      e.clientY >= r.top  - 16 && e.clientY <= r.bottom + 80; // covers the travel path
+    if (!inside){
+      div.classList.remove('lifted');
+      document.removeEventListener('mousemove', onMove);
+    }
+  };
+  document.addEventListener('mousemove', onMove);
+}
+
+function selectCategory(slug){
+  const toggleOff = slug === activeSlug;
+  activeSlug = toggleOff ? null : slug;
+  searchEl.value = '';   // choosing a category clears any search
+
+  dividersEl.querySelectorAll('.divider').forEach(d => {
+    const t = d.querySelector('.tab');
+    const on = !toggleOff && t.dataset.slug === slug;
+    d.classList.toggle('active', on);
+    t.setAttribute('aria-pressed', String(on));
+  });
+  catgridEl.querySelectorAll('.catbtn').forEach(b => {
+    const on = !toggleOff && b.dataset.slug === slug;
+    b.classList.toggle('active', on);
+    b.setAttribute('aria-pressed', String(on));
+  });
+
+  if (toggleOff || !activeSlug){ galleryEl.innerHTML = ''; return; }
+  renderCategory(DATA.categories.find(c => c.slug === slug));
+}
+
+function clearActiveDividers(){
+  activeSlug = null;
+  dividersEl.querySelectorAll('.divider').forEach(d => {
+    d.classList.remove('active');
+    d.querySelector('.tab').setAttribute('aria-pressed', 'false');
+  });
+}
+
+function runSearch(){
+  const q = searchEl.value.trim().toLowerCase();
+  if (q.length < 2){ if (!q) galleryEl.innerHTML = ''; return; }
+  clearActiveDividers();            // searching leaves category browsing
+  const matches = ALL.filter(r => r.title.toLowerCase().includes(q));
+
+  const head = document.createElement('div');
+  head.className = 'gallery-head';
+  head.innerHTML =
+    '<h2>Search</h2>' +
+    '<span class="count">' + matches.length + ' recipe' + (matches.length===1?'':'s') +
+      ' matching &ldquo;' + esc(searchEl.value.trim()) + '&rdquo;</span>' +
+    '<button class="close" type="button">Clear &times;</button>';
+  head.querySelector('.close').addEventListener('click', () => { searchEl.value=''; galleryEl.innerHTML=''; searchEl.focus(); });
+
+  galleryEl.innerHTML = '';
+  galleryEl.appendChild(head);
+
+  if (!matches.length){
+    const p = document.createElement('p');
+    p.className = 'empty';
+    p.textContent = 'No recipes found. Try another word.';
+    galleryEl.appendChild(p);
+    return;
+  }
+  const grid = makeGrid(matches.map(r => makeCard(r, r.catName, {showCat:true, slug:r.catSlug})));
+  galleryEl.appendChild(grid);
+  layoutGrid(grid);
+}
+searchEl.addEventListener('input', runSearch);
+
+function renderCategory(cat){
+  const frag = document.createDocumentFragment();
+
+  const head = document.createElement('div');
+  head.className = 'gallery-head';
+  head.innerHTML =
+    '<h2>' + esc(cat.name) + '</h2>' +
+    '<span class="count">' + cat.recipes.length + ' recipe' + (cat.recipes.length===1?'':'s') + '</span>' +
+    '<button class="close" type="button">Close &times;</button>';
+  head.querySelector('.close').addEventListener('click', () => selectCategory(cat.slug));
+  frag.appendChild(head);
+
+  const grid = makeGrid(cat.recipes.map(r => makeCard(r, cat.name)));
+  frag.appendChild(grid);
+
+  galleryEl.innerHTML = '';
+  galleryEl.appendChild(frag);
+  layoutGrid(grid);
+  head.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+/* deal the cards round-robin into N columns: masonry heights, but each
+   visual row still reads left-to-right in order */
+function makeGrid(cardEls){
+  const grid = document.createElement('div');
+  grid.className = 'cards';
+  grid._cards = cardEls;
+  return grid;
+}
+function layoutGrid(grid){
+  if (!grid || !grid._cards) return;
+  const avail = grid.getBoundingClientRect().width || 960;
+  const n = Math.max(1, Math.floor((avail + 22) / (250 + 22)));
+  if (Number(grid.dataset.cols) === n) return;
+  grid.dataset.cols = n;
+  grid.innerHTML = '';
+  const cols = [];
+  for (let i = 0; i < n; i++){
+    const c = document.createElement('div');
+    c.className = 'mcol';
+    cols.push(c);
+    grid.appendChild(c);
+  }
+  grid._cards.forEach((el, i) => cols[i % n].appendChild(el));
+}
+window.addEventListener('resize', () => layoutGrid(document.querySelector('.cards')));
+
+function makeCard(recipe, catName, opts){
+  const card = document.createElement('figure');
+  card.className = 'rcard';
+
+  if (opts && opts.showCat){
+    const cat = document.createElement('button');
+    cat.type = 'button';
+    cat.className = 'rcard-cat';
+    cat.textContent = catName;
+    cat.style.setProperty('--badge', tint(CATCOLOR[opts.slug] || '#e8dcc0'));
+    cat.title = 'Open ' + catName;
+    cat.addEventListener('click', () => selectCategory(opts.slug));
+    card.appendChild(cat);
+  }
+
+  const title = document.createElement('figcaption');
+  title.className = 'rcard-title';
+  title.textContent = recipe.title;
+  card.appendChild(title);
+
+  const scans = document.createElement('div');
+  scans.className = 'scans';
+  recipe.pages.forEach((page, idx) => {
+    if (recipe.pages.length > 1){
+      const badge = document.createElement('span');
+      badge.className = 'pagebadge';
+      badge.textContent = 'Page ' + (idx+1) + ' of ' + recipe.pages.length;
+      scans.appendChild(badge);
+    }
+    const img = document.createElement('img');
+    img.className = 'scan';
+    img.loading = 'lazy';
+    img.src = encodeURI(page.thumb);
+    img.alt = recipe.title + (recipe.pages.length>1 ? ' (page '+(idx+1)+')' : '');
+    img.addEventListener('click', () => openLightbox(recipe));
+    scans.appendChild(img);
+  });
+  card.appendChild(scans);
+  return card;
+}
+
+function openLightbox(recipe){
+  lb.querySelectorAll('img').forEach(n => n.remove());
+  lbTitle.textContent = recipe.title;
+  recipe.pages.forEach(page => {
+    const img = document.createElement('img');
+    img.src = encodeURI(page.img);
+    img.alt = recipe.title;
+    lb.appendChild(img);
+  });
+  lb.classList.add('open');
+  lb.setAttribute('aria-hidden','false');
+}
+function closeLightbox(){ lb.classList.remove('open'); lb.setAttribute('aria-hidden','true'); }
+lb.addEventListener('click', e => { if (e.target === lb || e.target.id === 'lbClose') closeLightbox(); });
+document.getElementById('lbClose').addEventListener('click', closeLightbox);
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (lb.classList.contains('open')){ closeLightbox(); return; }
+  if (searchEl.value){ searchEl.value=''; galleryEl.innerHTML=''; }
+});
+
+function esc(s){ return s.replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+
+// lighten a hex color toward cream, for the category badge background
+function tint(hex){
+  const m = hex.replace('#','');
+  const r = parseInt(m.slice(0,2),16), g = parseInt(m.slice(2,4),16), b = parseInt(m.slice(4,6),16);
+  const mix = (c) => Math.round(c + (255 - c) * 0.55);
+  return 'rgb(' + mix(r) + ',' + mix(g) + ',' + mix(b) + ')';
+}
+</script>
+</body>
+</html>
