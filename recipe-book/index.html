@@ -47,7 +47,7 @@
     font-family:"Playfair Display","Didot","Georgia",serif;
     font-size:2rem;margin:0;line-height:1.15;
   }
-  .site-title p.sub{margin:6px 0 0;font-style:italic;color:var(--ink-soft);font-size:.9rem;}
+  .site-title p.sub{margin:6px 0 64px;font-style:italic;color:var(--ink-soft);font-size:.9rem;}
 
   /* ===================== THE 3D BOX ===================== */
   .scene{
@@ -157,24 +157,87 @@
         var(--wood-grain) 23px, transparent 25px, transparent 52px),
       linear-gradient(180deg,#c4ac83,var(--wood-inner));
   }
+  /* The lid is a shallow hollow tray. --t is its depth, --w the wall
+     thickness. .face.lid itself is just the open mouth (transparent);
+     the faces below build the box. */
   .face.lid{
-    width:460px;height:250px;left:0;top:-250px;
+    --t:45px;                          /* lid depth (inner recess) */
+    --to:58px;                         /* outer wall depth (the visible edge) */
+    --w:6px;                           /* lid wall thickness */
+    /* black with a touch of brown (no yellow), slightly translucent */
+    --lid-hi:rgba(128,112,96,.84);     /* light warm-grey highlight (thin rim, lit edge) */
+    --lid-lit:rgba(96,82,70,.82);      /* brownish grey, lit faces */
+    --lid-lit2:rgba(68,58,49,.84);
+    --lid-mid:rgba(48,41,35,.86);      /* dark brown-grey */
+    --lid-dark:rgba(30,25,21,.88);     /* near black, brown cast */
+    --lid-black:rgba(17,14,12,.9);     /* black, deep shadow */
+    --lid-edge:rgba(8,6,5,.72);        /* outline */
+    width:460px;height:310px;left:0;top:-310px;
     transform-origin:50% 100%;
     transform:translateZ(-125px) rotateX(68deg);
-    /* black lid: dark inner panel inside a slightly lighter frame */
-    background:
-      linear-gradient(180deg,#2a2723,#141210) padding-box,
-      linear-gradient(180deg,#413c35,#221f1b) border-box;
-    border:14px solid transparent;
-    outline:1px solid #000;
-    border-radius:10px 10px 0 0;
-    box-shadow:inset 0 0 30px rgba(0,0,0,.55);
+    border-radius:9px 9px 3px 3px;
   }
-  .face.lid::after{
-    content:"";position:absolute;inset:0;
-    background:repeating-linear-gradient(90deg,
-      transparent 0,transparent 24px,
-      rgba(255,255,255,.04) 25px,transparent 27px,transparent 60px);
+  /* outer bottom (the lid's top when closed), at the back of the slab */
+  .face.lid .outer{
+    position:absolute;inset:0;
+    transform:translateZ(calc(-1 * var(--to)));
+    background:linear-gradient(180deg,var(--lid-lit),var(--lid-lit2));
+    border:1px solid var(--lid-edge);
+    border-radius:9px 9px 3px 3px;
+  }
+  /* outer side walls — the lid's visible exterior thickness */
+  .face.lid .rim{position:absolute;border:1px solid var(--lid-edge);}
+  .face.lid .rim.top{
+    left:0;right:0;top:0;height:var(--to);
+    transform-origin:center top;transform:rotateX(-90deg);
+    background:linear-gradient(180deg,var(--lid-hi),var(--lid-lit2));
+  }
+  .face.lid .rim.left{
+    top:0;bottom:0;left:0;width:var(--to);
+    transform-origin:left center;transform:rotateY(90deg);
+    background:linear-gradient(90deg,var(--lid-lit),var(--lid-mid));
+  }
+  .face.lid .rim.right{
+    top:0;bottom:0;right:0;width:var(--to);
+    transform-origin:right center;transform:rotateY(-90deg);
+    background:linear-gradient(90deg,var(--lid-mid),var(--lid-dark));
+  }
+  /* rim top surface: the flat top edge of the walls, framing the mouth */
+  .face.lid .rimtop{
+    position:absolute;inset:0;
+    border:var(--w) solid var(--lid-hi);
+    background:transparent;
+    border-radius:9px 9px 3px 3px;
+    box-shadow:inset 0 0 0 1px var(--lid-edge);
+  }
+  /* recessed inner floor of the tray */
+  .face.lid .infloor{
+    position:absolute;inset:var(--w);
+    transform:translateZ(calc(-1 * var(--t) + 4px));
+    background:linear-gradient(180deg,var(--lid-mid),var(--lid-dark));
+    border:1px solid var(--lid-edge);
+  }
+  /* inner walls (in shadow) — their meeting with the floor is the depth line */
+  .face.lid .inw{position:absolute;background:linear-gradient(180deg,var(--lid-black),var(--lid-dark));border:1px solid var(--lid-edge);}
+  .face.lid .inw.top{
+    left:var(--w);right:var(--w);top:var(--w);height:calc(var(--t) - 4px);
+    transform-origin:center top;transform:rotateX(-90deg);
+    filter:brightness(.82);
+  }
+  .face.lid .inw.bottom{
+    left:var(--w);right:var(--w);bottom:var(--w);height:calc(var(--t) - 4px);
+    transform-origin:center bottom;transform:rotateX(90deg);
+    filter:brightness(.7);
+  }
+  .face.lid .inw.left{
+    top:var(--w);bottom:var(--w);left:var(--w);width:calc(var(--t) - 4px);
+    transform-origin:left center;transform:rotateY(90deg);
+    filter:brightness(.9);
+  }
+  .face.lid .inw.right{
+    top:var(--w);bottom:var(--w);right:var(--w);width:calc(var(--t) - 4px);
+    transform-origin:right center;transform:rotateY(-90deg);
+    filter:brightness(.75);
   }
   .face.lid .hinge{
     position:absolute;bottom:-13px;width:26px;height:7px;
@@ -186,7 +249,7 @@
 
   /* ===== dividers standing inside, generated from the recipe folders ===== */
   .divider{
-    position:absolute;left:24px;right:24px;bottom:4px;height:86px;
+    position:absolute;left:29px;right:19px;bottom:-25px;height:70px;
     transform:translateZ(var(--z));
     background:var(--c);
     border:1px solid rgba(90,65,40,.35);
@@ -381,7 +444,7 @@
 
   <header class="site-title">
     <h1>The Reinhardt Family Recipe Box</h1>
-    <p class="sub">Gathered with love</p><br>
+    <p class="sub">Gathered with love</p>
   </header>
 
   <div class="scene">
@@ -389,6 +452,16 @@
 
     <div class="box3d">
       <div class="face lid" aria-hidden="true">
+        <span class="outer"></span>
+        <span class="rim top"></span>
+        <span class="rim left"></span>
+        <span class="rim right"></span>
+        <span class="inw top"></span>
+        <span class="inw bottom"></span>
+        <span class="inw left"></span>
+        <span class="inw right"></span>
+        <span class="infloor"></span>
+        <span class="rimtop"></span>
         <span class="hinge l"></span>
         <span class="hinge r"></span>
       </div>
@@ -433,7 +506,12 @@
 /* all-manila dividers: two barely-different shades so neighbors read as
    separate cards, but the whole box stays manila */
 const PALETTE = ['#ecdcb0','#e3d09e'];
-const TAB_X = ['0%','14%','28%','43%','57%','71%','84%']; // tab x-positions
+/* Tab x-positions, as % of the divider's own width (412px: 460 - 24 - 24).
+   Each tab is a fixed 72px wide, so the flush-right position is exactly
+   (412-72)/412 ≈ 82.52% — the last column is set there so its tab's right
+   edge lines up exactly with the card's own right edge. The rest are
+   spaced evenly across the same range. */
+const TAB_X = ['0%','13.75%','27.5%','41.25%','55%','68.75%','82.52%']; // tab x-positions
 const TAB_COLS = TAB_X.length;
 
 const dividersEl = document.getElementById('dividers');
